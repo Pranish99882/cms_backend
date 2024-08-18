@@ -6,7 +6,7 @@ export const restriction = (requiredPermission: string) => {
     const userPermissions: string[] =  permissionArray 
 
     if (userPermissions.includes(requiredPermission)) {
-      next(); // Permission granted, proceed to the next middleware or route handler
+      next(); 
     } else {
       res.status(403).json({ message: 'Forbidden: You do not have permission' });
     }

@@ -35,7 +35,5 @@ export class User {
   async setPassword(password: string) {
     this.password = await bcrypt.hash(password, 12);
     this.passwordSet = true;
-    // this.passwordResetToken = null;
-    // this.passwordResetExpires = null;
   }
 }

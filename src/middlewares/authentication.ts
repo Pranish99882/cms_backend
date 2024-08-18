@@ -27,7 +27,6 @@ export const authentication = async (req: Request, res: Response, next: NextFunc
       return res.status(401).json({ message: 'Unauthorized !!!! ' });
     }
      
-    //Add later  Attach the authenticated student to the request object
     console.log("userData",user);
     req.reqData=user;
     

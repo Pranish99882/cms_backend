@@ -81,7 +81,7 @@ register: async (req: Request, res: Response) =>{
         roleNames,
         permissionNames,
         passwordResetToken: token,
-        passwordResetExpires: new Date(Date.now() + 180000), //3600000= 1 hour from now
+        passwordResetExpires: new Date(Date.now() + 180000), 
       });
       await userRepository.save(newUser);
       console.log(newUser);
@@ -172,7 +172,7 @@ loginData : async (req: Request, res: Response) => {
 
     res.cookie('authToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Ensure this is correct based on your environment
+      secure: process.env.NODE_ENV === 'production', 
       sameSite: 'lax', 
       maxAge: 3600000, 
     });
@@ -194,7 +194,7 @@ loginData : async (req: Request, res: Response) => {
 
       // Fetch all users
       const users = await userRepository.find({
-        select: ['id', 'username', 'email', 'roleNames',"permissionNames"], // Fields to return
+        select: ['id', 'username', 'email', 'roleNames',"permissionNames"], 
       });
 
       res.status(200).json(users);
@@ -231,7 +231,7 @@ loginData : async (req: Request, res: Response) => {
 
   updateProfile : async (req: Request, res: Response) => {
     const { username, email, roleNames } = req.body;
-    const userId = req.reqData?.id; // Assuming you have a middleware that attaches the authenticated user to the request
+    const userId = req.reqData?.id; // As middleware has attached the authenticated user to the request
     console.log(userId, username);
   
     try {
