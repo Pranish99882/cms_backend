@@ -17,16 +17,18 @@ app.use(cors({
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, 
 }));
-
+ 
+  app.post('/loginData',userController.loginData);
+  app.post('/logout',userController.logout);
 
   app.post('/register',userController.register);
   app.post('/createUser',userController.createUser);
   app.get('/getAllUsers',authentication, userController.getAllUsers);
   app.delete('/userDelete/:id',authentication,restriction('delete'),userController.delete);
-  app.post('/loginData',userController.loginData);
   app.get('/profile', authentication, userController.getProfile);
   app.put('/profile', authentication, userController.updateProfile);
   app.post('/setPassword',userController.setPassword);
+
   
   if (require.main === module) {
     const port = 3000;

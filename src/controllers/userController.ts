@@ -80,8 +80,10 @@ register: async (req: Request, res: Response) =>{
         email,
         roleNames,
         permissionNames,
+        passwordSet: false,
         passwordResetToken: token,
         passwordResetExpires: new Date(Date.now() + 180000), 
+        isActive: false, 
       });
       await userRepository.save(newUser);
       console.log(newUser);
@@ -131,6 +133,7 @@ register: async (req: Request, res: Response) =>{
       }
   
       await user.setPassword(password);
+      user.isActive = true;
       await userRepository.save(user);
   
       const loginUrl = `http://localhost:3001/loginData`;
@@ -145,8 +148,6 @@ register: async (req: Request, res: Response) =>{
     }
   },
   
-  
-
 
 loginData : async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -176,7 +177,6 @@ loginData : async (req: Request, res: Response) => {
       sameSite: 'lax', 
       maxAge: 3600000, 
     });
-
     
     return res.status(200).json({
       message: 'Login successful',
@@ -194,7 +194,7 @@ loginData : async (req: Request, res: Response) => {
 
       // Fetch all users
       const users = await userRepository.find({
-        select: ['id', 'username', 'email', 'roleNames',"permissionNames"], 
+        select: ['id', 'username', 'email', 'isActive', 'roleNames',"permissionNames"], 
       });
 
       res.status(200).json(users);
@@ -283,5 +283,15 @@ loginData : async (req: Request, res: Response) => {
       console.error('Error deleting student:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
+  },
+
+  
+  logout: async (req: Request, res: Response) => {
+    res.clearCookie('authToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+    res.json({ message: "Logout Successful" });
   },
 }

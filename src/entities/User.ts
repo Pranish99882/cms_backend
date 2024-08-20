@@ -22,8 +22,11 @@ export class User {
   @Column({ type: 'timestamp', nullable: true, default: null}) 
   passwordResetExpires: Date | null;
 
-  @Column({ default: false }) 
+  @Column({ default: true }) 
   passwordSet: boolean;
+
+  @Column({ default: true })
+  isActive: boolean;
 
   @Column()
   roleNames: string;
