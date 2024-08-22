@@ -27,11 +27,11 @@ export const authentication = async (req: Request, res: Response, next: NextFunc
       return res.status(401).json({ message: 'Unauthorized !!!! ' });
     }
      
-    console.log("userData",user);
+    // console.log("userData",user);
     req.reqData=user;
     
     permissionArray.push(...user.permissionNames);
-    console.log("Permission list",permissionArray)
+    // console.log("Permission list",permissionArray)
     next();
 
   } catch (error) {

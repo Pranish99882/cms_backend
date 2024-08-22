@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import { MoreThan } from 'typeorm';
+import { client } from '../elasticsearchclient';
 
 
 const transporter = nodemailer.createTransport({
@@ -16,7 +17,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
 export const userController = {
+
 register: async (req: Request, res: Response) =>{
     try {
       const { username, email, password,roleNames } = req.body;
@@ -187,22 +190,40 @@ loginData : async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 },
+ 
+  getAllUsers : async (req: Request, res: Response) => {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
 
-  getAllUsers: async (req: Request, res: Response) => {
-    try {
-      const userRepository = AppDataSource.getRepository(User);
+    // Get page and limit from query params (default to page 1 and limit 10)
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-      // Fetch all users
-      const users = await userRepository.find({
-        select: ['id', 'username', 'email', 'isActive', 'roleNames',"permissionNames"], 
-      });
+    // Calculate the offset
+    const offset = (page - 1) * limit;
 
-      res.status(200).json(users);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  },
+    // Fetch users with pagination
+    const [users, total] = await userRepository.findAndCount({
+      select: ['id', 'username', 'email', 'isActive', 'roleNames', 'permissionNames'],
+      skip: offset, // Skip the first "offset" users
+      take: limit,  // Limit the number of users fetched to "limit"
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(total / limit);
+
+    // Send response with users, current page, total pages, and total users
+    res.status(200).json({
+      users,
+      currentPage: page,
+      totalPages,
+      totalUsers: total,
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+},
 
   getProfile : async (req: Request, res: Response) => {
     try {
@@ -294,4 +315,52 @@ loginData : async (req: Request, res: Response) => {
     });
     res.json({ message: "Logout Successful" });
   },
+
+  searchUsers : async (req: Request, res: Response) => {
+    const query = req.query.q as string;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+  
+    try {
+      const result = await client.search({
+        index: 'users', 
+        body: {
+          query: {
+            multi_match: {
+              query, 
+              fields: ['username', 'email', 'roleNames', 'permissionNames'],
+            },
+          },
+         
+          size: limit, 
+        },
+      });
+  
+      const totalUsers = result.hits.total.value;
+  
+      const totalPages = Math.ceil(totalUsers / limit);
+      
+      res.status(200).json({
+       users:result.hits.hits, // Respond with the found users
+        currentPage: page,
+        totalPages: totalPages,
+      });
+    } catch (error) {
+      console.error('Error searching users:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
 }
+
+export const getUsersFromDB = async () => {
+  const userRepository = AppDataSource.getRepository(User);
+
+  // Retrieve users from the database, selecting only specific columns
+  const users = await userRepository.find({
+    select: ['id', 'username', 'email', 'isActive', 'roleNames', 'permissionNames'],
+  });
+
+  return users; 
+};
+
+

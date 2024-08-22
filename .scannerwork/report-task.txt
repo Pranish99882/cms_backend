@@ -1,0 +1,6 @@
+projectKey=cms
+serverUrl=http://localhost:9000
+serverVersion=10.6.0.92116
+dashboardUrl=http://localhost:9000/dashboard?id=cms
+ceTaskId=26136949-5a05-4194-a120-a13091a4de02
+ceTaskUrl=http://localhost:9000/api/ce/task?id=26136949-5a05-4194-a120-a13091a4de02

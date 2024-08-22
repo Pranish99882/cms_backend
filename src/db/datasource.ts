@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, Index } from 'typeorm';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -15,8 +15,3 @@ export const AppDataSource = new DataSource({
   subscribers: [],
 });
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log('Database connected successfully');
-  })
-  .catch((err) => console.log('Error connecting database', err));
