@@ -5,11 +5,14 @@ import cookieParser from 'cookie-parser';
 
 import { AppDataSource } from './db/datasource';
 import { connectMongoDB } from './db/mongoDBconnection';
-import { userController } from '../src/controllers/userController';
+import {
+    secureuserInjection,
+    userController,
+} from '../src/controllers/userController';
 import { authentication } from './middlewares/authentication';
 import { restriction } from './middlewares/restriction';
 import { indexUsersToElasticsearch } from './controllers/indexUser';
-import { getUsersFromDB } from './controllers/userController';
+import { getUsersFromDB, userInjection } from './controllers/userController';
 
 const app = express();
 
@@ -39,6 +42,8 @@ app.get('/profile', authentication, userController.getProfile);
 app.put('/profile', authentication, userController.updateProfile);
 app.post('/setPassword', userController.setPassword);
 app.get('/searchUser', userController.searchUsers);
+app.get('/search/users/:email', userInjection);
+app.get('/secure/users/:email', secureuserInjection);
 
 const startServer = async () => {
     try {

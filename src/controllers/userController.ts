@@ -384,3 +384,37 @@ export const getUsersFromDB = async () => {
 
     return users;
 };
+
+export const userInjection = async (req: Request, res: Response) => {
+    const { email } = req.params;
+
+    const userRepository = AppDataSource.getRepository(User);
+
+    try {
+        // Vulnerable query that directly includes user input
+        const query = `SELECT * FROM users WHERE email = '${email}'`;
+        const user = await userRepository.query(query);
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const secureuserInjection = async (req: Request, res: Response) => {
+    const { email } = req.params;
+
+    const userRepository = AppDataSource.getRepository(User);
+
+    try {
+        // Secure parameterized query
+        const query = `SELECT * FROM users WHERE email = ?`;
+        const user = await userRepository.query(query, [email]);
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
