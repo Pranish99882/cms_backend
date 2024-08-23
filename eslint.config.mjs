@@ -10,49 +10,6 @@
 // ];
 
 
-// import globals from "globals";
-// import tsPlugin from "@typescript-eslint/eslint-plugin";
-// import tsParser from "@typescript-eslint/parser";
-// import js from "@eslint/js";
-// import prettier from "eslint-plugin-prettier";
-// import prettierConfig from "eslint-config-prettier";
-
-// export default [
-//   {
-//     ignores: ["dist/", "node_modules/"], // Ignore these directories
-//   },
-//   {
-//     files: ["src/**/*.{ts,tsx}"], // Target TypeScript files
-//     languageOptions: {
-//       parser: tsParser, // Use TypeScript parser
-//       sourceType: "module", // Use ES module syntax
-//       globals: globals.node, // Node.js globals
-//     },
-//     plugins: {
-//       "@typescript-eslint": tsPlugin, // TypeScript plugin
-//       prettier, // Prettier plugin
-//     },
-//     rules: {
-//       ...js.configs.recommended.rules, // ESLint recommended rules
-//       ...tsPlugin.configs.recommended.rules, // TypeScript ESLint recommended rules
-//       "prettier/prettier": "warn", // Enforce Prettier formatting
-//       "@typescript-eslint/ban-ts-comment": "warn", // Warn about @ts-ignore comments
-//       "@typescript-eslint/no-require-imports": "warn", // Allow require() imports
-//       "@typescript-eslint/no-explicit-any": "warn", // Allow usage of `any` type
-
-//       "@typescript-eslint/no-unused-vars": [
-//         "warn",
-//         {
-//           vars: "all",
-//           args: "none", // Ignore unused function arguments
-//           ignoreRestSiblings: true, // Ignore unused variables in destructuring
-//         },
-//       ],
-//     },
-//   },
-//   prettierConfig, // Prettier and other configurations
-// ];
-
 import globals from "globals";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
