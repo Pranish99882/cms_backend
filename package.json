@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/index.ts"
+    "start": "nodemon ./src/index.ts",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --config eslint.config.mjs --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "lint:check": "eslint \"src/**/*.{ts,tsx}\" --config eslint.config.mjs",
+    "lint:config": "npx eslint . --config eslint.config.mjs",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +21,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "eslint-plugin-import": "^2.29.1",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.3",
@@ -41,6 +47,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.9.0",
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.9",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.2.0"

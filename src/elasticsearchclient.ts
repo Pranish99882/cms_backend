@@ -1,15 +1,16 @@
-const { Client } = require('@elastic/elasticsearch');
+// const { Client } = require("@elastic/elasticsearch");
+import { Client } from '@elastic/elasticsearch';
 
 // Create a client instance
 export const client = new Client({
-  node: 'https://localhost:9200', // Replace with your Elasticsearch node URL
-  auth: {
-    username: 'elastic', // Replace with your Elasticsearch username
-    password: 'BD0wY*6saeWSdorUp3*O' // Replace with your Elasticsearch password
-  },
-  tls:{
-    rejectUnauthorized:false
-  }
+    node: 'https://localhost:9200', // Replace with your Elasticsearch node URL
+    auth: {
+        username: 'elastic', // Replace with your Elasticsearch username
+        password: 'BD0wY*6saeWSdorUp3*O', // Replace with your Elasticsearch password
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
 });
 
 // async function createIndex() {
@@ -26,7 +27,7 @@ export const client = new Client({
 //           },
 //         },
 //       });
-  
+
 //       console.log('Index created successfully');
 //     } catch (error: any) {
 //       if (error.meta && error.meta.body) {
@@ -37,19 +38,19 @@ export const client = new Client({
 //     }
 //   }
 
-  async function checkElasticsearchConnection() {
+async function checkElasticsearchConnection() {
     try {
-      await client.ping();
-      console.log('Elasticsearch connection successful');
+        await client.ping();
+        console.log('Elasticsearch connection successful');
     } catch (error: any) {
-      if (error.meta && error.meta.body) {
-        console.error('Elasticsearch connection error:', error.meta.body);
-      } else {
-        console.error('Elasticsearch connection error:', error);
-      }
+        if (error.meta && error.meta.body) {
+            console.error('Elasticsearch connection error:', error.meta.body);
+        } else {
+            console.error('Elasticsearch connection error:', error);
+        }
     }
-  }
-  
-  checkElasticsearchConnection();
-  
+}
+
+checkElasticsearchConnection();
+
 //   createIndex();

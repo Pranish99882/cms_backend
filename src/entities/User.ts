@@ -1,42 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import bcrypt from 'bcryptjs';
 
-@Entity('users') 
+@Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  username: string;
+    @Column()
+    username: string;
 
-  @Column()
-  email: string;
+    @Column()
+    email: string;
 
-  @Column({ nullable: true})
-  password: string;
+    @Column({ nullable: true })
+    password: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true})
-  passwordResetToken: string | null;
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    passwordResetToken: string | null;
 
+    @Column({ type: 'timestamp', nullable: true, default: null })
+    passwordResetExpires: Date | null;
 
-  @Column({ type: 'timestamp', nullable: true, default: null}) 
-  passwordResetExpires: Date | null;
+    @Column({ default: true })
+    passwordSet: boolean;
 
-  @Column({ default: true }) 
-  passwordSet: boolean;
+    @Column({ default: true })
+    isActive: boolean;
 
-  @Column({ default: true })
-  isActive: boolean;
+    @Column()
+    roleNames: string;
 
-  @Column()
-  roleNames: string;
+    @Column('simple-array')
+    permissionNames: string[];
 
-  @Column("simple-array") 
-  permissionNames: string[];
-
-
-  async setPassword(password: string) {
-    this.password = await bcrypt.hash(password, 12);
-    this.passwordSet = true;
-  }
+    async setPassword(password: string) {
+        this.password = await bcrypt.hash(password, 12);
+        this.passwordSet = true;
+    }
 }
