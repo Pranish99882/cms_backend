@@ -33,7 +33,7 @@ export const authentication = async (
         // console.log("userData",user);
         req.reqData = user;
 
-        permissionArray.push(...user.permissionNames);
+        // permissionArray.push(...user.permissionNames);
         // console.log("Permission list",permissionArray)
         next();
     } catch (error) {

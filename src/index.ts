@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import { AppDataSource } from './db/datasource';
-import { connectMongoDB } from './db/mongoDBconnection';
+// import { connectMongoDB } from './db/mongoDBconnection';
 import {
     secureuserInjection,
     userController,
@@ -15,7 +15,6 @@ import { indexUsersToElasticsearch } from './controllers/indexUser';
 import { getUsersFromDB, userInjection } from './controllers/userController';
 
 const app = express();
-
 app.use(express.json());
 app.use(cookieParser());
 
@@ -31,7 +30,12 @@ app.post('/loginData', userController.loginData);
 app.post('/logout', userController.logout);
 app.post('/register', userController.register);
 app.post('/createUser', userController.createUser);
-app.get('/getAllUsers', userController.getAllUsers);
+app.get(
+    '/getAllUsers',
+    authentication,
+    restriction('read'),
+    userController.getAllUsers
+);
 app.delete(
     '/userDelete/:id',
     authentication,
@@ -53,7 +57,7 @@ const startServer = async () => {
         await indexUsersToElasticsearch(users);
         console.log('Users indexed to Elasticsearch');
 
-        await connectMongoDB();
+        // await connectMongoDB();
 
         const port = 3000;
         app.listen(port, () => {
