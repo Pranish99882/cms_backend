@@ -23,6 +23,7 @@ export const userController = {
             const { username, email, password, roleNames } = req.body;
             const userRepository = AppDataSource.getRepository(User);
 
+            // Check if the user already exists
             const existingUser = await userRepository.findOne({
                 where: { email },
             });
@@ -32,27 +33,27 @@ export const userController = {
                     .json({ message: 'Email already in use' });
             }
 
-            let permissionNames = ['read'];
+            // Create a new user instance
+            const newUser = new User();
+            newUser.username = username;
+            newUser.email = email;
+            newUser.roleNames = roleNames || 'User';
 
-            if (roleNames === 'Admin') {
-                permissionNames = ['create', 'read', 'delete'];
-            }
+            // Set the password
+            await newUser.setPassword(password);
 
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            const newUser = await userRepository.create({
-                username,
-                email,
-                password: hashedPassword,
-                roleNames: roleNames || 'User',
-                permissionNames,
-            });
-
+            // Save the user to MySQL
             await userRepository.save(newUser);
+
+            // Fetch and set permissions from MongoDB
+            const permissionNames = await newUser.fetchPermissionsFromMongoDB();
 
             res.status(201).json({
                 message: 'User registered successfully',
-                user: newUser,
+                user: {
+                    ...newUser,
+                    permissionNames,
+                },
             });
         } catch (error) {
             console.error('Error registering user:', error);
@@ -75,22 +76,17 @@ export const userController = {
 
             const token = uuidv4();
 
-            let permissionNames = ['read'];
-
-            if (roleNames === 'Admin') {
-                permissionNames = ['create', 'read', 'delete'];
-            }
-
             const newUser = await userRepository.create({
                 username,
                 email,
                 roleNames,
-                permissionNames,
                 passwordSet: false,
                 passwordResetToken: token,
                 passwordResetExpires: new Date(Date.now() + 180000),
                 isActive: false,
             });
+            const permissionNames = await newUser.fetchPermissionsFromMongoDB();
+
             await userRepository.save(newUser);
             console.log(newUser);
 
@@ -108,6 +104,7 @@ export const userController = {
             res.status(201).json({
                 message: 'User created. Check your email to set a password.',
                 user: newUser,
+                permissionNames,
             });
         } catch (error) {
             console.error('Error creating user:', error);
@@ -206,14 +203,7 @@ export const userController = {
 
             // Fetch users with pagination
             const [users, total] = await userRepository.findAndCount({
-                select: [
-                    'id',
-                    'username',
-                    'email',
-                    'isActive',
-                    'roleNames',
-                    'permissionNames',
-                ],
+                select: ['id', 'username', 'email', 'isActive', 'roleNames'],
                 skip: offset, // Skip the first "offset" users
                 take: limit, // Limit the number of users fetched to "limit"
             });
@@ -338,12 +328,7 @@ export const userController = {
                     query: {
                         multi_match: {
                             query,
-                            fields: [
-                                'username',
-                                'email',
-                                'roleNames',
-                                'permissionNames',
-                            ],
+                            fields: ['username', 'email', 'roleNames'],
                         },
                     },
 
@@ -372,14 +357,7 @@ export const getUsersFromDB = async () => {
 
     // Retrieve users from the database, selecting only specific columns
     const users = await userRepository.find({
-        select: [
-            'id',
-            'username',
-            'email',
-            'isActive',
-            'roleNames',
-            'permissionNames',
-        ],
+        select: ['id', 'username', 'email', 'isActive', 'roleNames'],
     });
 
     return users;

@@ -11,7 +11,6 @@ export const indexUsersToElasticsearch = async (users: User[]) => {
             username: user.username,
             email: user.email,
             roleNames: user.roleNames,
-            permissionNames: user.permissionNames,
         },
     ]);
 
