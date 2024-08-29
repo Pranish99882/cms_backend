@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import 'dotenv/config';
 
 import { AppDataSource } from './db/datasource';
 // import { connectMongoDB } from './db/mongoDBconnection';

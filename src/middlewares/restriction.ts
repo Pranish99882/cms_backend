@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { MongoClient } from 'mongodb';
 import { createClient } from 'redis';
 
-const mongoUri = 'mongodb://localhost:27017'; // Replace with your MongoDB URI
-const mongoDbName = 'yourMongoDb'; // Replace with your MongoDB database name
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const mongoDbName = process.env.MONGO_DB_NAME || 'yourMongoDb';
 
 // Create a Redis client
 const redisClient = createClient({
-    url: 'redis://localhost:6379',
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
 });
 
 redisClient.connect().catch(console.error); // Handle connection errors

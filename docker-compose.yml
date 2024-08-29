@@ -1,0 +1,146 @@
+# services:
+#     app:
+#         build: .
+#         container_name: backend-app
+#         ports:
+#             - '3000:3000'
+#         environment:
+#             MYSQL_HOST: mysql
+#             MYSQL_PORT: 3306
+#             MYSQL_USERNAME: root
+#             MYSQL_PASSWORD: kiit@123
+#             MYSQL_DATABASE: cms
+#             REDIS_HOST: redis
+#             REDIS_PORT: 6379
+#             MONGO_URI: mongodb://mongo:27017
+#             MONGO_DB_NAME: yourMongoDb
+#             ELASTICSEARCH_HOST: http://elasticsearch:9200
+#             ELASTICSEARCH_USERNAME: elastic
+#             ELASTICSEARCH_PASSWORD: BD0wY*6saeWSdorUp3*O
+#         depends_on:
+#             - mysql
+#             - redis
+#             - mongo
+#             - elasticsearch
+
+#     mysql:
+#         image: mysql:8.0
+#         container_name: mysql
+#         environment:
+#             MYSQL_ROOT_PASSWORD: kiit@123
+#             MYSQL_DATABASE: cms
+#         ports:
+#             - '3307:3306'
+#         volumes:
+#             - mysql-data:/var/lib/mysql
+
+#     redis:
+#         image: redis:latest
+#         container_name: redis
+#         ports:
+#             - '6379:6379'
+
+#     mongo:
+#         image: mongo:latest
+#         container_name: mongo
+#         ports:
+#             - '27017:27017'
+
+#     elasticsearch:
+#         image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+#         container_name: elasticsearch
+#         environment:
+#             - node.name=elasticsearch
+#             - cluster.name=elasticsearch-cluster
+#             - discovery.type=single-node
+#             - ELASTICSEARCH_USERNAME=elastic
+#             - ELASTICSEARCH_PASSWORD=BD0wY*6saeWSdorUp3*O
+#         ports:
+#             - '9200:9200'
+#         ulimits:
+#             memlock:
+#                 soft: -1
+#                 hard: -1
+#             nofile:
+#                 soft: 65536
+#                 hard: 65536
+#         volumes:
+#             - es-data:/usr/share/elasticsearch/data
+
+# volumes:
+#     mysql-data:
+#     es-data:
+
+services:
+    app:
+        build: .
+        container_name: backend-app
+        ports:
+            - '3000:3000'
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_PORT: 3306
+            MYSQL_USERNAME: root
+            MYSQL_PASSWORD: kiit@123
+            MYSQL_DATABASE: cms
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            MONGO_URI: mongodb://mongo:27017
+            MONGO_DB_NAME: yourMongoDb
+            ELASTICSEARCH_HOST: http://elasticsearch:9200
+            ELASTICSEARCH_USERNAME: elastic
+            ELASTICSEARCH_PASSWORD: BD0wY*6saeWSdorUp3*O
+        depends_on:
+            - mysql
+            - redis
+            - mongo
+            - elasticsearch
+
+    mysql:
+        image: mysql:8.0
+        container_name: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: kiit@123
+            MYSQL_DATABASE: cms
+        ports:
+            - '3307:3306'
+        volumes:
+            - mysql-data:/var/lib/mysql
+            - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
+
+    redis:
+        image: redis:latest
+        container_name: redis
+        ports:
+            - '6379:6379'
+
+    mongo:
+        image: mongo:latest
+        container_name: mongo
+        ports:
+            - '27017:27017'
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+        container_name: elasticsearch
+        environment:
+            - node.name=elasticsearch
+            - cluster.name=elasticsearch-cluster
+            - discovery.type=single-node
+            - ELASTICSEARCH_USERNAME=elastic
+            - ELASTICSEARCH_PASSWORD=BD0wY*6saeWSdorUp3*O
+        ports:
+            - '9200:9200'
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        volumes:
+            - es-data:/usr/share/elasticsearch/data
+
+volumes:
+    mysql-data:
+    es-data:

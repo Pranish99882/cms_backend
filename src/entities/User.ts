@@ -183,9 +183,11 @@ export class User {
     roleNames: string;
 
     // Do not include `permissionNames` column here
+    // Update your configuration to use environment variables
 
-    private static mongoUri = 'mongodb://localhost:27017';
-    private static mongoDbName = 'yourMongoDb';
+    private static mongoUri =
+        process.env.MONGO_URI || 'mongodb://localhost:27017';
+    private static mongoDbName = process.env.MONGO_DB_NAME || 'yourMongoDb';
 
     private static defaultPermissions: Record<string, string[]> = {
         Admin: ['create', 'read', 'update', 'delete'],
