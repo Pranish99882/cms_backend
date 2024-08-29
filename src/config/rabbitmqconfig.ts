@@ -1,5 +1,6 @@
 import amqp from 'amqplib';
-import { config } from '../backend/src/config/config';
+
+import { config } from '../config/config';
 
 const QUEUE = 'myQueue';
 

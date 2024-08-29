@@ -2,21 +2,16 @@ import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import 'dotenv/config';
 
+import 'dotenv/config';
+import { indexUsersToElasticsearch } from './controllers/indexUser';
 import { AppDataSource } from './db/datasource';
-// import { connectMongoDB } from './db/mongoDBconnection';
+import routes from './routes/userRoutes';
 import {
     listenForMessages,
-    publishMsg,
-    secureuserInjection,
-    userController,
-} from '../src/controllers/userController';
-import { authentication } from './middlewares/authentication';
-import { restriction } from './middlewares/restriction';
-import { indexUsersToElasticsearch } from './controllers/indexUser';
-import { getUsersFromDB, userInjection } from './controllers/userController';
-import { connectRabbitMQ } from '../rabbitmqconfig';
+    getUsersFromDB,
+} from './controllers/userController';
+import { connectRabbitMQ } from './config/rabbitmqconfig';
 
 const app = express();
 app.use(express.json());
@@ -30,44 +25,18 @@ app.use(
     })
 );
 
-app.post('/loginData', userController.loginData);
-app.post('/logout', userController.logout);
-app.post('/register', userController.register);
-app.post('/createUser', userController.createUser);
-app.get(
-    '/getAllUsers',
-    authentication,
-    restriction('read'),
-    userController.getAllUsers
-);
-app.delete(
-    '/userDelete/:id',
-    authentication,
-    restriction('delete'),
-    userController.delete
-);
-app.get('/profile', authentication, userController.getProfile);
-app.put('/profile', authentication, userController.updateProfile);
-app.post('/setPassword', userController.setPassword);
-app.get('/searchUser', userController.searchUsers);
-app.get('/search/users/:email', userInjection);
-app.get('/secure/users/:email', secureuserInjection);
-app.get('/check', (req, res) => {
-    res.send('you are ready to go !!!');
-});
-app.post('/publish', publishMsg);
-listenForMessages();
+app.use('/', routes);
 
-connectRabbitMQ().then(() => listenForMessages());
 const startServer = async () => {
     try {
+        connectRabbitMQ().then(() => listenForMessages());
+
         await AppDataSource.initialize();
         console.log('MySQL Database connected successfully');
+
         const users = await getUsersFromDB();
         await indexUsersToElasticsearch(users);
         console.log('Users indexed to Elasticsearch');
-
-        // await connectMongoDB();
 
         const port = 3000;
         app.listen(port, () => {

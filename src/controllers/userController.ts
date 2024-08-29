@@ -8,7 +8,7 @@ import { MoreThan } from 'typeorm';
 import { User } from '../entities/User';
 import { AppDataSource } from '../db/datasource';
 import { client } from '../elasticsearchclient';
-import { getChannel } from '../../rabbitmqconfig';
+import { getChannel } from '../config/rabbitmqconfig';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
