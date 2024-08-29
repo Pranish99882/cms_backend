@@ -7,6 +7,8 @@ import 'dotenv/config';
 import { AppDataSource } from './db/datasource';
 // import { connectMongoDB } from './db/mongoDBconnection';
 import {
+    listenForMessages,
+    publishMsg,
     secureuserInjection,
     userController,
 } from '../src/controllers/userController';
@@ -14,6 +16,7 @@ import { authentication } from './middlewares/authentication';
 import { restriction } from './middlewares/restriction';
 import { indexUsersToElasticsearch } from './controllers/indexUser';
 import { getUsersFromDB, userInjection } from './controllers/userController';
+import { connectRabbitMQ } from '../rabbitmqconfig';
 
 const app = express();
 app.use(express.json());
@@ -49,7 +52,13 @@ app.post('/setPassword', userController.setPassword);
 app.get('/searchUser', userController.searchUsers);
 app.get('/search/users/:email', userInjection);
 app.get('/secure/users/:email', secureuserInjection);
+app.get('/check', (req, res) => {
+    res.send('you are ready to go !!!');
+});
+app.post('/publish', publishMsg);
+listenForMessages();
 
+connectRabbitMQ().then(() => listenForMessages());
 const startServer = async () => {
     try {
         await AppDataSource.initialize();

@@ -17,6 +17,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^8.15.0",
     "@types/mongoose": "^5.11.97",
+    "amqplib": "^0.10.4",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@types/amqplib": "^0.10.5",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",

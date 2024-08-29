@@ -1,11 +1,13 @@
 // const { Client } = require("@elastic/elasticsearch");
 import { Client } from '@elastic/elasticsearch';
 
+import { config } from './config/config';
+
 export const client = new Client({
-    node: process.env.ELASTICSEARCH_HOST || 'http://localhost:9200', // Use environment variable or default
+    node: config.elasticsearch.host || 'http://localhost:9200', // Use environment variable or default
     auth: {
-        username: process.env.ELASTICSEARCH_USERNAME || 'elastic', // Use environment variable or default
-        password: process.env.ELASTICSEARCH_PASSWORD || 'BD0wY*6saeWSdorUp3*O', // Use environment variable or default
+        username: config.elasticsearch.username || 'elastic', // Use environment variable or default
+        password: config.elasticsearch.password || 'BD0wY*6saeWSdorUp3*O', // Use environment variable or default
     },
     tls: {
         rejectUnauthorized: false,

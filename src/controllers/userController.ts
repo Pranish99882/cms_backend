@@ -8,6 +8,7 @@ import { MoreThan } from 'typeorm';
 import { User } from '../entities/User';
 import { AppDataSource } from '../db/datasource';
 import { client } from '../elasticsearchclient';
+import { getChannel } from '../../rabbitmqconfig';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -394,5 +395,51 @@ export const secureuserInjection = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+const QUEUE = 'myQueue';
+
+export const publishMsg = async (req: Request, res: Response) => {
+    const { message } = req.body;
+
+    if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+    }
+
+    try {
+        const channel = getChannel();
+        channel.sendToQueue(QUEUE, Buffer.from(message));
+        console.log(`Message sent: ${message}`);
+        res.status(200).json({ success: true, message: 'Message sent' });
+    } catch (error) {
+        console.error('Error sending message:', error);
+        res.status(500).json({ error: 'Failed to send message' });
+    }
+};
+
+export const listenForMessages = async () => {
+    try {
+        const channel = getChannel();
+
+        await channel.assertQueue(QUEUE, { durable: false });
+
+        channel.consume(
+            QUEUE,
+            (message) => {
+                if (message) {
+                    console.log(
+                        `Received message: ${message.content.toString()}`
+                    );
+                    channel.ack(message); // Acknowledge message after processing
+                }
+            },
+            {
+                noAck: false, // Set noAck to false to manually acknowledge messages
+            }
+        );
+
+        console.log('Listening for messages...');
+    } catch (error) {
+        console.error('Error in message listener:', error);
     }
 };

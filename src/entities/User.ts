@@ -152,7 +152,7 @@ import bcrypt from 'bcryptjs';
 import { MongoClient } from 'mongodb';
 
 import { IRole } from '../models/role.model'; // Adjust the path as necessary
-
+import { config } from '../config/config';
 @Entity('users')
 export class User {
     @PrimaryGeneratedColumn()
@@ -185,9 +185,8 @@ export class User {
     // Do not include `permissionNames` column here
     // Update your configuration to use environment variables
 
-    private static mongoUri =
-        process.env.MONGO_URI || 'mongodb://localhost:27017';
-    private static mongoDbName = process.env.MONGO_DB_NAME || 'yourMongoDb';
+    private static mongoUri = config.mongo.uri || 'mongodb://localhost:27017';
+    private static mongoDbName = config.mongo.dbName || 'yourMongoDb';
 
     private static defaultPermissions: Record<string, string[]> = {
         Admin: ['create', 'read', 'update', 'delete'],

@@ -1,3 +1,5 @@
+# version: '3.8'
+
 # services:
 #     app:
 #         build: .
@@ -22,6 +24,8 @@
 #             - redis
 #             - mongo
 #             - elasticsearch
+#         networks:
+#             - cms-network
 
 #     mysql:
 #         image: mysql:8.0
@@ -33,43 +37,47 @@
 #             - '3307:3306'
 #         volumes:
 #             - mysql-data:/var/lib/mysql
+#             - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
+#         networks:
+#             - cms-network
 
 #     redis:
-#         image: redis:latest
+#         image: redis:alpine
 #         container_name: redis
 #         ports:
 #             - '6379:6379'
+#         networks:
+#             - cms-network
 
 #     mongo:
 #         image: mongo:latest
 #         container_name: mongo
 #         ports:
 #             - '27017:27017'
+#         networks:
+#             - cms-network
 
 #     elasticsearch:
 #         image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
 #         container_name: elasticsearch
 #         environment:
-#             - node.name=elasticsearch
-#             - cluster.name=elasticsearch-cluster
 #             - discovery.type=single-node
-#             - ELASTICSEARCH_USERNAME=elastic
-#             - ELASTICSEARCH_PASSWORD=BD0wY*6saeWSdorUp3*O
+#             - xpack.security.enabled=false
 #         ports:
 #             - '9200:9200'
-#         ulimits:
-#             memlock:
-#                 soft: -1
-#                 hard: -1
-#             nofile:
-#                 soft: 65536
-#                 hard: 65536
-#         volumes:
-#             - es-data:/usr/share/elasticsearch/data
+#             - '9300:9300'
+#         networks:
+#             - cms-network
 
 # volumes:
 #     mysql-data:
 #     es-data:
+
+# networks:
+#     cms-network:
+#         driver: bridge
+
+version: '3.8'
 
 services:
     app:
@@ -90,11 +98,18 @@ services:
             ELASTICSEARCH_HOST: http://elasticsearch:9200
             ELASTICSEARCH_USERNAME: elastic
             ELASTICSEARCH_PASSWORD: BD0wY*6saeWSdorUp3*O
+            RABBITMQ_HOST: rabbitmq
+            RABBITMQ_PORT: 5672
+            RABBITMQ_USER: guest
+            RABBITMQ_PASSWORD: guest
         depends_on:
             - mysql
             - redis
             - mongo
             - elasticsearch
+            - rabbitmq
+        networks:
+            - cms-network
 
     mysql:
         image: mysql:8.0
@@ -107,40 +122,53 @@ services:
         volumes:
             - mysql-data:/var/lib/mysql
             - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
+        networks:
+            - cms-network
 
     redis:
-        image: redis:latest
+        image: redis:alpine
         container_name: redis
         ports:
             - '6379:6379'
+        networks:
+            - cms-network
 
     mongo:
         image: mongo:latest
         container_name: mongo
         ports:
             - '27017:27017'
+        networks:
+            - cms-network
 
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
         container_name: elasticsearch
         environment:
-            - node.name=elasticsearch
-            - cluster.name=elasticsearch-cluster
             - discovery.type=single-node
-            - ELASTICSEARCH_USERNAME=elastic
-            - ELASTICSEARCH_PASSWORD=BD0wY*6saeWSdorUp3*O
+            - xpack.security.enabled=false
         ports:
             - '9200:9200'
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-            nofile:
-                soft: 65536
-                hard: 65536
-        volumes:
-            - es-data:/usr/share/elasticsearch/data
+            - '9300:9300'
+        networks:
+            - cms-network
+
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmqu
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+        ports:
+            - '5672:5672' # AMQP protocol port
+            - '15672:15672' # RabbitMQ management UI port
+        networks:
+            - cms-network
 
 volumes:
     mysql-data:
     es-data:
+
+networks:
+    cms-network:
+        driver: bridge
