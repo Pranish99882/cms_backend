@@ -70,6 +70,7 @@ export default [
                     ignoreRestSiblings: true, // Ignore unused variables in destructuring
                 },
             ],
+            'linebreak-style': 'off', // Disable linebreak-style rule
         },
     },
     prettierConfig, // Prettier and other configurations
